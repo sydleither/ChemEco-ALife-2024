@@ -1,0 +1,6 @@
+[submodule "chemical-ecology"]
+	path = chemical-ecology
+	url = https://github.com/emilydolson/chemical-ecology
+[submodule "graph-evolution"]
+	path = graph-evolution
+	url = https://github.com/sydleither/graph-evolution
