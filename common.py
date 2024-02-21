@@ -6,7 +6,7 @@ def get_code_location():
 
 
 def get_configs_path():
-    return code_location+"configs/"
+    return code_location+"output/configs/"
 
 
 def get_plots_path():

@@ -29,6 +29,31 @@ def experiment_config(save_dir, exp_dir, exp_name, eval_funcs, network_size=10, 
         json.dump(config, f, indent=4)
 
 
+def cpip_experiment(exp_dir):
+    configs_path = get_configs_path()
+    if not os.path.exists(configs_path+exp_dir):
+        os.makedirs(configs_path+exp_dir)
+
+    eval_funcs = []
+    for connectance in [0.2, 0.4, 0.6, 0.8]:
+        for pip in [0.2, 0.4, 0.6, 0.8]:
+            eval_funcs.append(
+                {
+                "weak_components": {"target": 1},
+                "connectance": {"target": connectance},
+                "positive_interactions_proportion": {"target": pip}
+                }
+            )
+
+    config_names = []
+    for i,eval_func in enumerate(eval_funcs):
+        exp_name = i
+        experiment_config(configs_path, exp_dir, exp_name, eval_func, network_size=10, num_generations=500, popsize=50)
+        config_names.append(exp_name)
+    
+    return config_names
+
+
 def capis_experiment(exp_dir):
     configs_path = get_configs_path()
     if not os.path.exists(configs_path+exp_dir):
@@ -132,6 +157,8 @@ if __name__ == "__main__":
         config_names = topology_experiment(experiment_name)
     elif experiment_name == "capis":
         config_names = capis_experiment(experiment_name)
+    elif experiment_name == "cpip":
+        config_names = cpip_experiment(experiment_name)
     else:
         print("Invalid experiment name.")
         exit()

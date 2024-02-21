@@ -74,7 +74,7 @@ def get_highest_scoring_matrices(df, n, param_names):
 
 def individual_scatter(df, x, y, hue, exp_name):
     plt.figure()
-    sns.stripplot(x=x, y=y, data=df, hue=hue, jitter=0.9)
+    sns.stripplot(x=x, y=y, data=df, hue=hue)
     plt.xlabel(x)
     plt.ylabel(y)
     plt.savefig(f"{get_plots_path()}{exp_name}/zcatter_{x}_{y}_{hue}.png")
@@ -82,10 +82,11 @@ def individual_scatter(df, x, y, hue, exp_name):
 
 
 def main(exp_name):
-    df, param_names = read_data(exp_name)
+    df, param_names, _ = read_data(exp_name)
     #get_highest_scoring_matrices(df, 1, param_names)
     #visualize_matrix("matrix_3372.dat")
     #visualize_graph("matrix_3372.dat")
+    individual_scatter(df, "pos_int_pro", "score", "connectance", exp_name)
 
 
 if __name__ == "__main__":

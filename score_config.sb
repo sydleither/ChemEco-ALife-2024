@@ -8,7 +8,7 @@
 
 ## Job name settings
 #SBATCH --job-name=alife2024
-#SBATCH -o ga_%A.out
+#SBATCH -o junk_%A.out
 
 ## Time requirement in format "days-hours:minutes"
 #SBATCH --time=0-1:00

@@ -7,7 +7,7 @@ import sys
 import pandas as pd
 from scipy.stats import qmc
 
-from common import get_code_location
+from common import get_code_location, get_configs_path
 sys.path.insert(0, f"{get_code_location()}graph-evolution")
 from ga import run
 from eval_functions import Evaluation
@@ -37,7 +37,7 @@ def is_properly_evolved(config, eval_obj, org):
 
 
 def main(exp_name, config_name, rep):
-    config = json.load(open(f"{get_code_location()}configs/{exp_name}/{config_name}.json"))
+    config = json.load(open(f"{get_configs_path()}{exp_name}/{config_name}.json"))
     eval_obj = Evaluation(config)
     config_num = config_name.split("_")[0]
     num_graphs = int(config["popsize"])
