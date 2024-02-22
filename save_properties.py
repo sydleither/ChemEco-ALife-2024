@@ -1,31 +1,23 @@
+import json
 import os
 import pickle
 import sys
 
 import pandas as pd
 
-from common import get_code_location, get_processed_data_path, get_raw_data_path
+from common import abbreviate_property_name, get_code_location, get_configs_path, get_processed_data_path, get_properties_of_interest, get_raw_data_path
 sys.path.insert(0, f"{get_code_location()}graph-evolution")
 from organism import Organism
 from eval_functions import Evaluation
 
 
-def abbreviate_property_name(property_name):
-    split_name = property_name.split("_")
-    if len(split_name) == 1:
-        abbrv_name = split_name
-    else:
-        abbrv_name = [x[0:3] for x in split_name]
-    return "_".join(abbrv_name)
-
-
 def calculate_properties(df):
     eval_obj = Evaluation()
-    property_names = [func for func in dir(Evaluation) 
-                      if callable(getattr(Evaluation, func)) 
-                      and not (func.startswith("__") or func.endswith("distribution"))]
+    property_names = get_properties_of_interest()
     
     for property_name in property_names:
+        if property_name.endswith("distribution"):
+            continue
         eval_func = getattr(eval_obj, property_name)
         df[abbreviate_property_name(property_name)] = df["graph"].apply(eval_func)
 

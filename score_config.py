@@ -30,8 +30,14 @@ def write_matrix(interactions, output_name):
 def is_properly_evolved(config, eval_obj, org):
     eval_funcs = config["eval_funcs"]
     for eval_func in eval_funcs.keys():
-        target_val = eval_funcs[eval_func]["target"]
-        if abs(org.getProperty(eval_func, eval_obj) - target_val) > 0.1:
+        org_val = org.getProperty(eval_func, eval_obj)
+        if eval_func.endswith("distribution"):
+            target_val = eval_obj.target_dist_dict[eval_func]
+            error = sum([abs(org_val[i]-target_val[i]) for i in range(len(org_val))])
+        else:
+            target_val = eval_funcs[eval_func]["target"]
+            error = abs(org_val - target_val)
+        if error > 0.1:
             return False
     return True
 

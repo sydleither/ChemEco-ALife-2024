@@ -2,7 +2,18 @@ import json
 import os
 import sys
 
-from common import get_code_location, get_configs_path
+from common import abbreviate_property_name, get_code_location, get_configs_path, get_properties_of_interest
+
+
+def get_range_of_values(constraint):
+    if constraint == "diameter":
+        return [2, 3, 4, 5, 6]
+    elif constraint == "in_degree_distribution" or constraint == "out_degree_distribution":
+        return ["basically_exp", "basically_norm"]
+    elif constraint.startswith("number"):
+        return [0, 10, 20, 30]
+    else:
+        return [0.2, 0.4, 0.6, 0.8]
 
 
 def experiment_config(save_dir, exp_dir, exp_name, eval_funcs, network_size=10, num_generations=500, popsize=50):
@@ -27,6 +38,33 @@ def experiment_config(save_dir, exp_dir, exp_name, eval_funcs, network_size=10, 
     config_path = f"{save_dir}{exp_dir}/{exp_name}.json"
     with open(config_path, "w") as f:
         json.dump(config, f, indent=4)
+
+
+def single_constraint_experiment(exp_dir, constraint):
+    configs_path = get_configs_path()
+    if not os.path.exists(configs_path+exp_dir):
+        os.makedirs(configs_path+exp_dir)
+
+    eval_funcs = []
+    if constraint.endswith("distribution"):
+        target_indicator = "name"
+    else:
+        target_indicator = "target"
+    for x in get_range_of_values(constraint):
+        eval_funcs.append(
+            {
+            "weak_components": {"target": 1},
+            constraint: {target_indicator: x}
+            }
+        )
+
+    config_names = []
+    for i,eval_func in enumerate(eval_funcs):
+        exp_name = i
+        experiment_config(configs_path, exp_dir, exp_name, eval_func, network_size=10, num_generations=500, popsize=50)
+        config_names.append(exp_name)
+    
+    return config_names
 
 
 def cpip_experiment(exp_dir):
@@ -130,26 +168,37 @@ def test_experiment(exp_dir):
     return config_names
 
 
-#https://stackoverflow.com/questions/312443/how-do-i-split-a-list-into-equally-sized-chunks
-def chunks(lst, n):
-    for i in range(0, len(lst), n):
-        yield lst[i:i + n]
-
-
 def generate_scripts(exp_dir, config_names):
     code_location = get_code_location()
     configs_path = get_configs_path()
 
-    config_chunks = chunks(config_names, 99)
-    for i,chunk in enumerate(config_chunks):
-        with open(f"{configs_path}{exp_dir}/submit_experiments{i}", "w") as f:
-            for config_name in chunk:
-                f.write(f"sbatch {code_location}score_config.sb {exp_dir} {config_name}\n")
+    with open(f"{configs_path}{exp_dir}/submit_experiments", "w") as f:
+        for config_name in config_names:
+            f.write(f"sbatch {code_location}score_config.sb {exp_dir} {config_name}\n")
+
+
+def generate_scripts_batch(overall_exp_name, exp_dirs, config_names):
+    code_location = get_code_location()
+    configs_path = get_configs_path()
+
+    with open(f"{configs_path}/submit_{overall_exp_name}_experiments", "w") as f:
+        for j in range(len(exp_dirs)):
+            for config_name in config_names[j]:
+                f.write(f"sbatch {code_location}score_config.sb {exp_dirs[j]} {config_name}\n")
 
 
 if __name__ == "__main__":
     experiment_name = sys.argv[1]
-    if experiment_name == "test":
+    if experiment_name == "single":
+        all_config_names = []
+        all_exp_names = []
+        for constraint in get_properties_of_interest():
+            exp_name = abbreviate_property_name(constraint, 1)
+            all_exp_names.append(exp_name)
+            all_config_names.append(single_constraint_experiment(exp_name, constraint))
+        generate_scripts_batch(experiment_name, all_exp_names, all_config_names)
+        exit()
+    elif experiment_name == "test":
         config_names = test_experiment(experiment_name)
     elif experiment_name == "uniform":
         config_names = uniform_experiment(experiment_name)

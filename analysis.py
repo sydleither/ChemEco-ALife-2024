@@ -7,8 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
-from common import get_configs_path, get_non_property_column_names, get_plots_path, get_processed_data_path
-from save_properties import abbreviate_property_name
+from common import abbreviate_property_name, get_configs_path, get_non_property_column_names, get_plots_path, get_processed_data_path
 
 sns.set_palette(sns.color_palette(["#ef7c8e", "#4c956c", "#d68c45"]))
 
@@ -151,9 +150,13 @@ def read_data(exp_name):
 
     config_num = df["config_num"].unique()[0]
     config = json.load(open(f"{get_configs_path()}{exp_name}/{config_num}.json"))
-    constraints = [abbreviate_property_name(p) for p in config["eval_funcs"].keys() if p != "weak_components"]
+    constraints = [p for p in config["eval_funcs"].keys() if p != "weak_components"]
     for constraint in constraints:
-        df[constraint] = df[constraint].round(1)
+        constraint_abbrv = abbreviate_property_name(constraint)
+        if constraint.endswith("distribution"):
+            df[constraint_abbrv] = config["eval_funcs"][constraint]["name"]
+        else:
+            df[constraint_abbrv] = df[constraint_abbrv].round(1)
 
     return df, param_names, constraints
 
