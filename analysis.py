@@ -148,15 +148,21 @@ def read_data(exp_name):
     param_names = list(set(df.columns) - set(get_non_property_column_names()))
     df = df.reset_index()
 
-    config_num = df["config_num"].unique()[0]
+    config_num = df["config_num"].unique()[0] #assumes all configs for one exp name hold the same constraints
     config = json.load(open(f"{get_configs_path()}{exp_name}/{config_num}.json"))
-    constraints = [p for p in config["eval_funcs"].keys() if p != "weak_components"]
-    for constraint in constraints:
+    constraints = []
+    for constraint in [p for p in config["eval_funcs"].keys() if p != "weak_components"]:
         constraint_abbrv = abbreviate_property_name(constraint)
         if constraint.endswith("distribution"):
-            df[constraint_abbrv] = config["eval_funcs"][constraint]["name"]
+            df[constraint_abbrv] = "0"
+            for config_file in os.listdir(f"{get_configs_path()}{exp_name}"):
+                if config_file.endswith(".json"):
+                    dist_config = json.load(open(f"{get_configs_path()}{exp_name}/{config_file}"))
+                    dist_name = dist_config["eval_funcs"][constraint]["name"]
+                    df.loc[df["config_num"] == config_file[0:-5], constraint_abbrv] = dist_name
         else:
             df[constraint_abbrv] = df[constraint_abbrv].round(1)
+        constraints.append(constraint_abbrv)
 
     return df, param_names, constraints
 

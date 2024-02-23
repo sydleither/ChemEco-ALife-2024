@@ -12,6 +12,8 @@ def get_range_of_values(constraint):
         return ["basically_exp", "basically_norm"]
     elif constraint.startswith("number"):
         return [0, 10, 20, 30]
+    elif constraint == "average_negative_interactions_strength":
+        return [-0.2, -0.4, -0.6, -0.8]
     else:
         return [0.2, 0.4, 0.6, 0.8]
 
@@ -185,6 +187,12 @@ def generate_scripts_batch(overall_exp_name, exp_dirs, config_names):
         for j in range(len(exp_dirs)):
             for config_name in config_names[j]:
                 f.write(f"sbatch {code_location}score_config.sb {exp_dirs[j]} {config_name}\n")
+
+    with open(f"{configs_path}/run_{overall_exp_name}_analysis", "w") as f:
+        for j in range(len(exp_dirs)):
+            f.write(f"python3 save_properties.py {exp_dirs[j]}\n")
+        for j in range(len(exp_dirs)):
+            f.write(f"python3 analysis.py {exp_dirs[j]}\n")
 
 
 if __name__ == "__main__":
