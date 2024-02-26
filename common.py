@@ -1,7 +1,3 @@
-import numpy as np
-from scipy.stats import norm, expon
-
-
 code_location = "/mnt/home/leithers/grant/ChemEco-ALife-2024/"
 
 
