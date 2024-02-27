@@ -1,15 +1,18 @@
 import json
 import os
 import sys
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas.api.types import is_numeric_dtype
 import seaborn as sns
 
 from common import abbreviate_property_name, get_configs_path, get_non_property_column_names, get_plots_path, get_processed_data_path
 
 sns.set_palette(sns.color_palette(["#ef7c8e", "#4c956c", "#d68c45"]))
+warnings.filterwarnings('ignore')
 
 """
 Data Exploration Plots
@@ -153,14 +156,7 @@ def read_data(exp_name):
     constraints = []
     for constraint in [p for p in config["eval_funcs"].keys() if p != "weak_components"]:
         constraint_abbrv = abbreviate_property_name(constraint)
-        if constraint.endswith("distribution"):
-            df[constraint_abbrv] = "0"
-            for config_file in os.listdir(f"{get_configs_path()}{exp_name}"):
-                if config_file.endswith(".json"):
-                    dist_config = json.load(open(f"{get_configs_path()}{exp_name}/{config_file}"))
-                    dist_name = dist_config["eval_funcs"][constraint]["name"]
-                    df.loc[df["config_num"] == config_file[0:-5], constraint_abbrv] = dist_name
-        else:
+        if is_numeric_dtype(df[constraint_abbrv]):
             df[constraint_abbrv] = df[constraint_abbrv].round(1)
         constraints.append(constraint_abbrv)
 
@@ -169,23 +165,25 @@ def read_data(exp_name):
 
 def main(exp_name):
     df, param_names, constraints = read_data(exp_name)
+    numeric_param_names = [x for x in param_names if is_numeric_dtype(df[x])]
 
     path = f"{get_plots_path()}{exp_name}"
     if not os.path.exists(path):
         os.makedirs(path)
 
-    score_correlation(df, param_names, exp_name, "config_num")
-    plot_score_correlated_properties(df, param_names, exp_name, constraints)
+    score_correlation(df, numeric_param_names, exp_name, "config_num")
+    plot_score_correlated_properties(df, numeric_param_names, exp_name, constraints)
     score_histograms(df, exp_name, constraints)
     score_heatmaps(df, exp_name, constraints)
 
     if exp_name == "uniform":
-        param_correlation_heatmap(df, param_names, exp_name)
+        param_correlation_heatmap(df, numeric_param_names, exp_name)
 
 
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         exp_name = sys.argv[1]
+        print(exp_name)
         main(exp_name)
     else:
         print("Please provide an experiment name.")
