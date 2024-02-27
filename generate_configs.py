@@ -10,7 +10,7 @@ def get_range_of_values(constraint, num_constraints):
     if num_constraints == 1:
         if constraint == "diameter":
             return [2, 3, 4, 5, 6]
-        if constraint == "number_of_modules":
+        elif constraint == "number_of_modules":
             return [1, 3, 6, 9]
         elif constraint.endswith("pairs"):
             return [0, 10, 20, 30]
