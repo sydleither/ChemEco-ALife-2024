@@ -107,11 +107,11 @@ def individual_scatter(df, x, y, hue, exp_name):
 
 def main(exp_name):
     df, param_names, constraints = read_data(exp_name)
-    sample_matrices(df, "1", "1")
+    # sample_matrices(df, "1", "1")
     # get_highest_scoring_matrices(df, 1, param_names)
     # visualize_matrix("chemical-ecology/matrix_3372.dat")
     # visualize_graph("chemical-ecology/matrix_3372.dat")
-    # individual_scatter(df, "pos_int_pro", "score", "connectance", exp_name)
+    individual_scatter(df, "num_of_mod", "score", "pos_int_pro", exp_name)
 
 
 if __name__ == "__main__":

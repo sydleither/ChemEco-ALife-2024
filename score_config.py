@@ -72,9 +72,9 @@ def main(exp_name, config_name, rep):
             f"-INTERACTION_SOURCE interaction_matrix.dat "
             f"-SEED {rep} "
             f"-MAX_POP {10000} "
-            f"-WORLD_WIDTH 10 "
-            f"-WORLD_HEIGHT 10 "
-            f"-UPDATES {1000} "
+            f"-WORLD_WIDTH 25 "
+            f"-WORLD_HEIGHT 25 "
+            f"-UPDATES {5000} "
             f"-N_TYPES {ntypes}")],
             shell=True, 
             stdout=subprocess.DEVNULL)

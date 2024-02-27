@@ -26,8 +26,7 @@ def get_non_property_column_names():
 
 
 def get_properties_of_interest():
-    return ["connectance", "diameter", "clustering_coefficient", #topology
-            "in_degree_distribution", "out_degree_distribution", #degree distribution
+    return ["connectance", "diameter", "clustering_coefficient", "transitivity", "number_of_modules", #topology
             "number_of_mutualistic_pairs", "number_of_competiton_pairs", "number_of_parasitism_pairs", #motif
             "average_positive_interactions_strength", "average_negative_interactions_strength", "positive_interactions_proportion" #weight
             ]

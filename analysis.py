@@ -1,6 +1,7 @@
 import json
 import os
 import sys
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +11,7 @@ import seaborn as sns
 from common import abbreviate_property_name, get_configs_path, get_non_property_column_names, get_plots_path, get_processed_data_path
 
 sns.set_palette(sns.color_palette(["#ef7c8e", "#4c956c", "#d68c45"]))
+warnings.filterwarnings('ignore')
 
 """
 Data Exploration Plots
@@ -186,6 +188,7 @@ def main(exp_name):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         exp_name = sys.argv[1]
+        print(exp_name)
         main(exp_name)
     else:
         print("Please provide an experiment name.")

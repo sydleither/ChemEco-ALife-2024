@@ -5,7 +5,7 @@ import sys
 
 import pandas as pd
 
-from common import abbreviate_property_name, get_code_location, get_configs_path, get_processed_data_path, get_properties_of_interest, get_raw_data_path
+from common import abbreviate_property_name, get_code_location, get_processed_data_path, get_properties_of_interest, get_raw_data_path
 sys.path.insert(0, f"{get_code_location()}graph-evolution")
 from organism import Organism
 from eval_functions import Evaluation
@@ -48,7 +48,9 @@ def main(exp_name):
     df = df.drop("graph", axis=1)
     df.to_pickle(f"{get_processed_data_path()}{exp_name}.pkl")
 
+    print(exp_name)
     print(df[["config", "replicate"]].groupby(["config"]).count())
+    print()
 
 
 if __name__ == "__main__":
