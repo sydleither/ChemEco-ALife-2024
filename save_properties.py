@@ -44,6 +44,7 @@ def read_raw_data(exp_name):
                     all_results += results
             else:
                 print(f"Results not found in {results_path}.")
+                exit()
     df = pd.DataFrame.from_dict(all_results)
     return df
 

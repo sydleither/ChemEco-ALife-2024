@@ -1,4 +1,4 @@
-from common import get_plots_path, get_raw_data_path
+from common import get_plots_path
 from matplotlib.colors import BoundaryNorm
 import matplotlib.pyplot as plt
 from analysis import read_data
@@ -92,7 +92,7 @@ def get_highest_scoring_matrices(df, n, param_names):
         print(f"./chemical-ecology " +
               f"-DIFFUSION {row['diffusion']} -SEEDING_PROB {row['seeding']} -PROB_CLEAR {row['clear']} " +
               f"-INTERACTION_SOURCE matrix_{index}.dat -SEED {row['replicate']} -N_TYPES {row['ntypes']} " +
-              f"-WORLD_WIDTH 10 -WORLD_HEIGHT 10")
+              f"-WORLD_WIDTH 20 -WORLD_HEIGHT 20")
         print()
 
 
@@ -107,11 +107,12 @@ def individual_scatter(df, x, y, hue, exp_name):
 
 def main(exp_name):
     df, param_names, constraints = read_data(exp_name)
-    # sample_matrices(df, "1", "1")
-    # get_highest_scoring_matrices(df, 1, param_names)
-    # visualize_matrix("chemical-ecology/matrix_3372.dat")
-    # visualize_graph("chemical-ecology/matrix_3372.dat")
-    individual_scatter(df, "num_of_mod", "score", "pos_int_pro", exp_name)
+    #df = df.loc[(df["score"] > 0) & (df["score"] < 6)]
+    #sample_matrices(df, "1", "1")
+    #get_highest_scoring_matrices(df, 1, param_names)
+    #visualize_matrix("chemical-ecology/matrix_1201.dat")
+    #visualize_graph("chemical-ecology/matrix_1201.dat")
+    individual_scatter(df, "diameter", "score", constraints[0], exp_name)
 
 
 if __name__ == "__main__":
