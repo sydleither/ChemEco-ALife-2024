@@ -7,6 +7,16 @@ from graph_generation_utils import assign_weights, random_graph, stochastic_bloc
 from common import get_data_path, write_matrix
 
 
+def create_run_script(data_dir, exp_name, matrix_names, local=False):
+    if local:
+        preamble = f"python3 run_experiment.py {exp_name} "
+    else:
+        preamble = f"sbatch run_experiment.sb {exp_name} "
+    with open(f"{data_dir}/run.sh", "w") as f:
+        for matrix_name in matrix_names:
+            f.write(preamble+matrix_name+"\n")
+
+
 def test():
     exp_dir = get_data_path("test")
     exp_matrices_dir = get_data_path("test", "matrices")
@@ -16,6 +26,8 @@ def test():
     edge_probabilities = [[0.9, 0.1, 0.1], [0.1, 0.9, 0.1], [0.1, 0.1, 0.9]]
     connectance = np.mean([x for y in edge_probabilities for x in y])
     edge_params = [[(1, 0.5), (0, 0.5), (0, 0.5)], [(0, 0.5), (1, 0.5), (0, 0.5)], [(0, 0.5), (0, 0.5), (1, 0.5)]]
+
+    matrix_names = []
     for i in range(replicates):
         edge_weights = assign_weights(num_nodes, communities, edge_params)
         sbm_topology = stochastic_block_model(num_nodes, communities, edge_probabilities)
@@ -25,6 +37,8 @@ def test():
         write_matrix(edge_weights, f"{exp_matrices_dir}/ew_{i}")
         write_matrix(sbm_network, f"{exp_matrices_dir}/sbm_{i}")
         write_matrix(random_network, f"{exp_matrices_dir}/random_{i}")
+        matrix_names += [f"sbm_{i}", f"random_{i}"]
+
     #TODO future experiments will have multiple edge_probabilities, etc
     #so params should be written for each condition, not just once per experiment
     #could read in this dict and pass in directly to funcs rather than defining afterwards
@@ -38,6 +52,7 @@ def test():
     }
     with open(f"{exp_dir}/params.json", "w") as f:
         json.dump(exp_params, f, indent=4)
+    create_run_script(exp_dir, "test", matrix_names, local=True)
 
 
 def main(exp_name):

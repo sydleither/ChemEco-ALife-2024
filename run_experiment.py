@@ -1,10 +1,6 @@
 import json
-import pickle
 import subprocess
 import sys
-
-import pandas as pd
-from scipy.stats import qmc
 
 from common import get_data_path
 
@@ -40,7 +36,7 @@ def main(exp_name, matrix_name):
         sys.stdout.flush()
         return
 
-    # df = pd.read_csv("output/ranked_threshold_communities_scores.csv")
+    # df = pd.read_csv(f"{exp_raw_dir}/{matrix_name}/ranked_threshold_communities_scores.csv")
     # score = df["logged_mult_score"][0]
     # num_communities = len(df)
 
