@@ -1,6 +1,19 @@
 from random import random
 
+import networkx as nx
 import numpy as np
+
+
+def symmetric_edges(num_vals, internal, external):
+    edge_probs = []
+    for i in range(num_vals):
+        edge_probs.append([])
+        for j in range(num_vals):
+            if i == j:
+                edge_probs[i].append(internal)
+            else:
+                edge_probs[i].append(external)
+    return edge_probs
 
 
 def random_graph(num_nodes, connectance):
@@ -39,3 +52,9 @@ def assign_weights(num_nodes, communities, edge_params):
             edge_weight = max(min(edge_weight, 1), -1)
             adj[edge1][edge2] = edge_weight
     return adj
+
+
+def is_network_valid(matrix):
+    nx_obj = nx.DiGraph(np.array(matrix))
+    strong_components = len(list(nx.weakly_connected_components(nx_obj)))
+    return strong_components == 1

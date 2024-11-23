@@ -1,11 +1,20 @@
 import json
 import sys
 
-import networkx as nx
 import numpy as np
 
-from graph_generation_utils import assign_weights, random_graph, stochastic_block_model
+from graph_generation_utils import (assign_weights, is_network_valid, random_graph, 
+                                    stochastic_block_model, symmetric_edges)
 from common import get_data_path, write_matrix
+
+
+def process_topology(exp_matrices_dir, matrix_name, topology_matrix, edge_weights, matrix_names):
+    if not is_network_valid(topology_matrix):
+        print(f"Too many connected components for matrix {matrix_name}")
+        return
+    weighted_graph = np.array(topology_matrix) * np.array(edge_weights)
+    write_matrix(weighted_graph, f"{exp_matrices_dir}/{matrix_name}")
+    matrix_names.append(matrix_name)
 
 
 def create_run_script(data_dir, exp_name, matrix_names, local=False):
@@ -18,21 +27,6 @@ def create_run_script(data_dir, exp_name, matrix_names, local=False):
             f.write(preamble+matrix_name+"\n")
 
 
-def is_network_valid(matrix):
-    nx_obj = nx.DiGraph(np.array(matrix))
-    strong_components = len(list(nx.weakly_connected_components(nx_obj)))
-    return strong_components == 1
-
-
-def process_topology(exp_matrices_dir, matrix_name, topology_matrix, edge_weights, matrix_names):
-    if not is_network_valid(topology_matrix):
-        print(f"Too many connected components for matrix {matrix_name}")
-        return
-    weighted_graph = np.array(topology_matrix) * np.array(edge_weights)
-    write_matrix(weighted_graph, f"{exp_matrices_dir}/{matrix_name}")
-    matrix_names.append(matrix_name)
-
-
 def test():
     exp_dir = get_data_path("test")
     exp_matrices_dir = get_data_path("test", "matrices")
@@ -40,9 +34,9 @@ def test():
     top_reps = 10
     num_nodes = 9
     communities = {0:0, 1:0, 2:0, 3:1, 4:1, 5:1, 6:2, 7:2, 8:2}
-    edge_probabilities = [[0.9, 0.1, 0.1], [0.1, 0.9, 0.1], [0.1, 0.1, 0.9]]
+    edge_probabilities = symmetric_edges(3, 0.9, 0.2)
     connectance = np.mean([x for y in edge_probabilities for x in y])
-    edge_params = [[(1, 0.5), (0, 0.5), (0, 0.5)], [(0, 0.5), (1, 0.5), (0, 0.5)], [(0, 0.5), (0, 0.5), (1, 0.5)]]
+    edge_params = symmetric_edges(3, (0.5, 0.25), (-0.5, 0.25))
 
     matrix_names = []
     for i in range(ew_reps):
@@ -53,7 +47,6 @@ def test():
             process_topology(exp_matrices_dir, f"sbm_{i}_{j}", sbm_topology, edge_weights, matrix_names)
             random_topology = random_graph(num_nodes, connectance)
             process_topology(exp_matrices_dir, f"random_{i}_{j}", random_topology, edge_weights, matrix_names)
-            
 
     #TODO future experiments will have multiple edge_probabilities, etc
     #so params should be written for each condition, not just once per experiment
