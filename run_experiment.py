@@ -36,28 +36,6 @@ def main(exp_name, matrix_name):
         sys.stdout.flush()
         return
 
-    # df = pd.read_csv(f"{exp_raw_dir}/{matrix_name}/ranked_threshold_communities_scores.csv")
-    # score = df["logged_mult_score"][0]
-    # num_communities = len(df)
-
-    # result = {
-    #     "experiment": exp_name,
-    #     "config": config_name,
-    #     "config_num": config_num,
-    #     "replicate": rep,
-    #     "ntypes": ntypes,
-    #     "seeding": seeding,
-    #     "diffusion": diffusion,
-    #     "clear": clear,
-    #     "graph": org,
-    #     "num_communities": num_communities,
-    #     "score": score
-    # }
-    # results.append(result)
-
-    # with open("results.pkl", "wb") as f:
-    #     pickle.dump(results, f)
-
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:

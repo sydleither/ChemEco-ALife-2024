@@ -12,11 +12,12 @@ def main(exp_name):
     results = []
     for matrix_name in os.listdir(exp_raw_dir):
         df = pd.read_csv(f"{exp_raw_dir}/{matrix_name}/ranked_threshold_communities_scores.csv")
-        graph_type, ew = matrix_name.split("_")
+        graph_type, ew_rep, top_rep = matrix_name.split("_")
         score = df["logged_mult_score"][0]
         num_communities = len(df)
         result = {"graph_type":graph_type,
-                  "edge_weights": ew,
+                  "ew_rep": ew_rep,
+                  "top_rep": top_rep,
                   "score":score, 
                   "num_communities":num_communities}
         results.append(result)
