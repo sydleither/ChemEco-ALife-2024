@@ -15,11 +15,13 @@ def main(exp_name):
         graph_type, ew_rep, top_rep = matrix_name.split("_")
         score = df["logged_mult_score"][0]
         num_communities = len(df)
+        avg_community_size = df["num_present_species"].mean()
         result = {"graph_type":graph_type,
                   "ew_rep": ew_rep,
                   "top_rep": top_rep,
                   "score":score, 
-                  "num_communities":num_communities}
+                  "num_communities":num_communities,
+                  "avg_community_size":avg_community_size}
         results.append(result)
     df = pd.DataFrame(results)
     df.to_csv(f"{exp_dir}/results.csv", index=False)

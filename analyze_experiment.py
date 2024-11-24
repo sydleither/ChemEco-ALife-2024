@@ -45,6 +45,7 @@ def main(exp_name):
     df = pd.read_csv(f"{exp_dir}/results.csv")
     graph_generation_bars(df, save_dir, "score")
     graph_generation_bars(df, save_dir, "num_communities")
+    graph_generation_bars(df, save_dir, "avg_community_size")
     graph_generation_pointplot(df, save_dir)
 
 
